@@ -14,5 +14,7 @@ BOOST_AUTO_TEST_CASE(General) {
      g(1,1)='e';
      g(1,2)='f';
     BOOST_TEST(g.toString("|") == "a|b|c\nd|e|f");
+    BOOST_CHECK_THROW(g(5,5), std::out_of_range);
+    BOOST_CHECK_THROW(Grid<char>(3,0), std::invalid_argument);
     
 }

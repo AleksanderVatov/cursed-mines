@@ -5,14 +5,16 @@
 #include <cstddef>
 #include <string>
 #include <sstream>
+#include <stdexcept>
 
 
 template <class Type>
 class Grid {
 public:
     Grid(std::size_t height, std::size_t width) {
-        assert(height > 0 && width > 0);
-        _array = new Type[width*height];
+        if(width == 0 || height == 0)
+            throw std::invalid_argument("Grid::Grid(): Null width and/or height!");
+        _array = new Type[width*height]();
         _height = height;
         _width = width;
     }
@@ -21,6 +23,8 @@ public:
     }
     
     Type & operator()(std::size_t row, std::size_t col) {
+        if(row >= _height || col >= _width)
+            throw std::out_of_range("Grid::operator(): Point out of range!");
         return _array[_index(row,col)];
     }
     
