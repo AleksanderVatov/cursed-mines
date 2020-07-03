@@ -14,7 +14,7 @@ public:
     Grid(std::size_t height, std::size_t width) {
         if(width == 0 || height == 0)
             throw std::invalid_argument("Grid::Grid(): Null width and/or height!");
-        _array = new Type[width*height]();
+        _array = new Type[width*height](); //Allocate and initialize
         _height = height;
         _width = width;
     }
@@ -29,6 +29,8 @@ public:
     }
     
     Type const & operator()(std::size_t row, std::size_t col) const {
+        if(row >= _height || col >= _width)
+            throw std::out_of_range("Grid::operator(): Point out of range!");
         return _array[_index(row,col)];
     }
     
@@ -52,7 +54,6 @@ public:
         }
         
         return s.str();
-        
     }
     
 protected:
