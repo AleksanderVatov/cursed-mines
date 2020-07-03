@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 #include <string>
 #include <sstream>
@@ -104,11 +105,100 @@ public:
         return g;
     }
     
+    class Neighborhood {
+    friend class Grid;
+    public:
+        class Iterator : public std::iterator<std::forward_iterator_tag, Type> {
+        friend class Neighborhood;
+        public:
+            bool operator==(Iterator const & other) {
+                return _pos == other._pos && _neighborhood == other._neighborhood;
+            }
+            
+            bool operator!=(Iterator const & other) {
+                return _pos != other._pos || _neighborhood != other._neighborhood;
+            }
+            Iterator& operator++() {
+                std::size_t y = _neighborhood->_y, 
+                            x = _neighborhood->_x, 
+                            y_max = _neighborhood->_grid->_height - 1, 
+                            x_max = _neighborhood->_grid->_width  - 1;
+                switch(_pos) {
+                    case -1: ++_pos;
+                        if(y > 0) break;
+                    case  0: ++_pos;
+                        if(x < x_max && y > 0) break;
+                    case  1: ++_pos;
+                        if(x < x_max) break;
+                    case  2: ++_pos;
+                        if(x < x_max && y < y_max) break;
+                    case  3: ++_pos;
+                        if(y < y_max) break;
+                    case  4: ++_pos;
+                        if(x > 0 && y < y_max) break;
+                    case  5: ++_pos;
+                        if(x > 0) break;
+                    case  6: ++_pos;
+                        if(x > 0 && y > 0) break;
+                    case  7: ++_pos;
+                }
+                return *this;
+            }
+            
+            Type& operator*() {
+                std::size_t y = _neighborhood->_y, x = _neighborhood->_x;
+                switch(_pos) {
+                    case 0: --y;      break;
+                    case 1: --y; ++x; break;
+                    case 2:      ++x; break;
+                    case 3: ++y; ++x; break;
+                    case 4: ++y;      break;
+                    case 5: ++y; --x; break;
+                    case 6:      --x; break;
+                    case 7: --y; --x; break;
+                    case 8: throw std::out_of_range("Grid::Neighborhood::Iterator: out of range!");
+                }
+                return _neighborhood->_grid->operator()(y, x);
+            }
+            
+        private:
+            Iterator(Neighborhood * neighborhood, int8_t pos) {
+                _neighborhood = neighborhood;
+                _pos = pos;
+            }
+            
+            Neighborhood * _neighborhood;
+            int8_t _pos;
+        };
+        
+        Iterator begin() {
+            return ++Iterator(this, -1);
+        }
+        Iterator end() {
+            return Iterator(this, 8);
+        }
+    private:
+        Neighborhood(Grid<Type>* grid, std::size_t y, std::size_t x) {
+            _grid = grid;
+            _y = y;
+            _x = x;
+            
+        }
+        Grid<Type> * _grid;
+        std::size_t _x, _y;
+    };
+    
+    Neighborhood neighbors(std::size_t row, std::size_t col) {
+        if(row >= _height || col >= _width)
+            throw std::out_of_range("Grid::operator(): Point out of range!");
+        return Neighborhood(this, row, col);
+    }
     
 protected:
     inline std::size_t _index(std::size_t row, std::size_t col) const{
         return row*_width + col;
     }
+    
     
 private:
     Type * _array;
