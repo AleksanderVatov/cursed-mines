@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstddef>
+#include <iterator>
 #include <string>
 #include <sstream>
 #include <stdexcept>
@@ -22,7 +23,7 @@ public:
     Grid(Grid<Type> &&) = default;
     
     ~Grid() {
-        std::cerr << "Deconstructing Grid with _array = " << (void*)_array;
+//         std::cerr << "Deconstructing Grid with _array = " << (void*)_array;
         if(_array) delete [] _array;
     }
     
@@ -51,6 +52,22 @@ public:
     }
     inline std::size_t height() const {
         return _height;
+    }
+    
+    Type * begin() {
+        return _array;
+    }
+    
+    Type const * begin() const {
+        return _array;
+    }
+    
+    Type * end() {
+        return _array + _height*_width;
+    }
+    
+    Type const * end() const{
+        return _array + _height*_width;
     }
     
     std::string toString(std::string colSeparator="", std::string rowSeparator="\n") const {
@@ -87,13 +104,14 @@ public:
         return g;
     }
     
+    
 protected:
     inline std::size_t _index(std::size_t row, std::size_t col) const{
         return row*_width + col;
     }
     
 private:
-    Type* _array;
+    Type * _array;
     std::size_t _height, _width;
 };
 
