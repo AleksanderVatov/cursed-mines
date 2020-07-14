@@ -5,13 +5,15 @@
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
-#include <string>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <utility>
 
 
 template <class Type>
 class Grid {
+typedef std::pair<std::size_t, std::size_t> Position;
 public:
     Grid(std::size_t height, std::size_t width) {
         if(width == 0 || height == 0)
@@ -38,6 +40,14 @@ public:
         if(row >= _height || col >= _width)
             throw std::out_of_range("Grid::operator(): Point out of range!");
         return _array[_index(row,col)];
+    }
+    
+    Type & operator()(Position pos) {
+        return operator()(pos.first, pos.second);
+    }
+    
+    Type const & operator()(Position pos) const {
+        return operator()(pos.first, pos.second);
     }
     
     bool operator==(Grid<Type> const & other) const {
@@ -146,6 +156,10 @@ public:
             }
             
             Type& operator*() {
+                return _neighborhood->_grid->operator()(pos());
+            }
+            
+            Position pos() const {
                 std::size_t y = _neighborhood->_y, x = _neighborhood->_x;
                 switch(_pos) {
                     case 0: --y;      break;
@@ -158,7 +172,7 @@ public:
                     case 7: --y; --x; break;
                     case 8: throw std::out_of_range("Grid::Neighborhood::Iterator: out of range!");
                 }
-                return _neighborhood->_grid->operator()(y, x);
+                return Position(y, x);
             }
             
         private:

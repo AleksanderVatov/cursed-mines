@@ -46,19 +46,19 @@ BOOST_AUTO_TEST_CASE(Algorithms) {
 
 BOOST_AUTO_TEST_CASE(Neighborhoods) {
     Grid<int> small (3,3);
-    for(auto& n: small.neighbors(1, 1)) n = 1;
+    for(int& n: small.neighbors(1, 1)) n = 1;
     BOOST_TEST(small.toString(""," ") == "111 101 111");
     
     Grid<int> large(7, 7);
-    for(auto& n: large.neighbors(0,0)) n = 1;
-    for(auto& n: large.neighbors(0,3)) n = 2;
-    for(auto& n: large.neighbors(0,6)) n = 3;
-    for(auto& n: large.neighbors(3,0)) n = 4;
-    for(auto& n: large.neighbors(3,3)) n = 5;
-    for(auto& n: large.neighbors(3,6)) n = 6;
-    for(auto& n: large.neighbors(6,0)) n = 7;
-    for(auto& n: large.neighbors(6,3)) n = 8;
-    for(auto& n: large.neighbors(6,6)) n = 9;
+    for(int& n: large.neighbors(0,0)) n = 1;
+    for(int& n: large.neighbors(0,3)) n = 2;
+    for(int& n: large.neighbors(0,6)) n = 3;
+    for(int& n: large.neighbors(3,0)) n = 4;
+    for(int& n: large.neighbors(3,3)) n = 5;
+    for(int& n: large.neighbors(3,6)) n = 6;
+    for(int& n: large.neighbors(6,0)) n = 7;
+    for(int& n: large.neighbors(6,3)) n = 8;
+    for(int& n: large.neighbors(6,6)) n = 9;
     
     std::string target = 
         "0120230\n"
