@@ -11,6 +11,9 @@ BOOST_AUTO_TEST_CASE(General) {
     
     int array1[6] = {1, 2, 3, 4, 5, 6};
     auto g0 = Grid<int>::fromArray(array1, 2, 3);
+    for(int i = 0; i < g0.width() * g0.height(); ++i) //Test flatIndex and unravelIndex
+        BOOST_ASSERT(i == g0.flatIndex(g0.unravelIndex(i)));
+    
     BOOST_ASSERT(Grid<int>::fromArray(array1, 2, 3) == Grid<int>::fromString("1 2 3 4 5 6", 2, 3));
     BOOST_TEST(Grid<int>::fromArray(array1, 2, 3).toString() == Grid<int>::fromString("1 2 3 4 5 6", 2, 3).toString());
     

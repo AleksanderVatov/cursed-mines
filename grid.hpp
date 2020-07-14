@@ -32,14 +32,14 @@ public:
     
     Type & operator()(std::size_t row, std::size_t col) {
         if(row >= _height || col >= _width)
-            throw std::out_of_range("Grid::operator(): Point out of range!");
-        return _array[_index(row,col)];
+            throw std::out_of_range("Grid::operator(): Cell out of range!");
+        return _array[flatIndex (row,col)];
     }
     
     Type const & operator()(std::size_t row, std::size_t col) const {
         if(row >= _height || col >= _width)
-            throw std::out_of_range("Grid::operator(): Point out of range!");
-        return _array[_index(row,col)];
+            throw std::out_of_range("Grid::operator(): Cell out of range!");
+        return _array[flatIndex (row,col)];
     }
     
     Type & operator()(Position pos) {
@@ -48,6 +48,18 @@ public:
     
     Type const & operator()(Position pos) const {
         return operator()(pos.first, pos.second);
+    }
+    
+    Type & operator()(std::size_t flatIndex) {
+        if(flatIndex >= _width*_height)
+            throw std::out_of_range("Grid::operator(): Flat index out of range!");
+        return _array[flatIndex];
+    }
+    
+    Type const & operator()(std::size_t flatIndex) const {
+        if(flatIndex >= _width*_height)
+            throw std::out_of_range("Grid::operator(): Flat index out of range!");
+        return _array[flatIndex];
     }
     
     bool operator==(Grid<Type> const & other) const {
@@ -85,7 +97,7 @@ public:
         std::stringstream s;
         for (int i = 0;;) {
             for(int j = 0;;) {
-                s << _array[_index(i,j)];
+                s << _array[flatIndex (i,j)];
                 if(++j == _width) break;
                 else s << colSeparator;
             }
@@ -162,10 +174,14 @@ public:
             }
             
             Type& operator*() {
-                return _neighborhood->_grid->operator()(pos());
+                return _neighborhood->_grid->operator()(flatIndex());
             }
             
             Position pos() const {
+                return _neighborhood->_grid->unravelIndex(flatIndex());
+            }
+            
+            std::size_t flatIndex() const {
                 std::size_t y = _neighborhood->_y, x = _neighborhood->_x;
                 switch(_pos) {
                     case 0: --y;      break;
@@ -178,7 +194,7 @@ public:
                     case 7: --y; --x; break;
                     case 8: throw std::out_of_range("Grid::Neighborhood::Iterator: out of range!");
                 }
-                return Position(y, x);
+                return _neighborhood->_grid->flatIndex(y, x);
             }
             
         bool operator==(Neighborhood const & other) {
@@ -223,9 +239,16 @@ public:
         return Neighborhood(this, row, col);
     }
     
-protected:
-    inline std::size_t _index(std::size_t row, std::size_t col) const{
+    inline std::size_t flatIndex (std::size_t row, std::size_t col) const {
         return row*_width + col;
+    }
+    
+    inline std::size_t flatIndex(Position const & pos) const {
+        return flatIndex(pos.first, pos.second);
+    }
+    
+    inline Position unravelIndex(std::size_t flatIndex) const {
+        return Position(flatIndex / _width, flatIndex % _width);
     }
     
     
