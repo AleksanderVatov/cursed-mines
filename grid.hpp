@@ -121,12 +121,18 @@ public:
         class Iterator : public std::iterator<std::forward_iterator_tag, Type> {
         friend class Neighborhood;
         public:
-            bool operator==(Iterator const & other) {
-                return _pos == other._pos && _neighborhood == other._neighborhood;
+            inline bool operator==(Iterator const & other) {
+                // Note that we do not check whether the two iterators refer to the same neighborhood.
+                // This saves a few useless comparisons and makes such comparisons undefined (as they
+                // probably should be).
+                return _pos == other._pos;
             }
             
-            bool operator!=(Iterator const & other) {
-                return _pos != other._pos || _neighborhood != other._neighborhood;
+            inline bool operator!=(Iterator const & other) {
+                // Note that we do not check whether the two iterators refer to the same neighborhood.
+                // This saves a few useless comparisons and makes such comparisons undefined (as they
+                // probably should be).
+                return _pos != other._pos;
             }
             Iterator& operator++() {
                 std::size_t y = _neighborhood->_y, 
@@ -174,6 +180,15 @@ public:
                 }
                 return Position(y, x);
             }
+            
+        bool operator==(Neighborhood const & other) {
+            return _grid == other._grid && _y == other._y && _x == other._x;
+        }
+        
+        bool operator!=(Neighborhood const & other) {
+            return _grid != other._grid || _y != other._y || _x != other._x;
+        }
+        
             
         private:
             Iterator(Neighborhood * neighborhood, int8_t pos) {
