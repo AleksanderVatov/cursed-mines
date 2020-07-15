@@ -13,8 +13,8 @@
 
 template <class Type>
 class Grid {
-typedef std::pair<std::size_t, std::size_t> Position;
 public:
+typedef std::pair<std::size_t, std::size_t> Position;
     Grid(std::size_t height, std::size_t width) {
         if(width == 0 || height == 0)
             throw std::invalid_argument("Grid::Grid(): Null width and/or height!");

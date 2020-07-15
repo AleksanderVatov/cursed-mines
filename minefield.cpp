@@ -5,6 +5,8 @@
 #include <queue>
 #include <set>
 
+#include <iostream>
+
 Minefield::Minefield(std::size_t height, std::size_t width): Grid<Square>(height, width) {}
 
 Minefield Minefield::generateRandom(std::size_t height, std::size_t width, int numberOfMines) {
@@ -40,19 +42,27 @@ void Minefield::reveal(std::size_t y, std::size_t x) {
     if(clickedSquare.isMined() || clickedSquare.surroundingMines() != 0) // We're done here
         return;
     
-    q.push(flatIndex(y, x)); //Push the clicked square to
+    q.push(clickedIndex); //Push the clicked square to q
     for(Neighborhood::Iterator it = neighborhood.begin(); it != neighborhood.end(); ++it)
-        if(it->surroundingMines() == 0) q.push(clickedIndex);
+        q.push(it.flatIndex());
     
-    while(!q.empty()) {
-        size_t ind = q.front();
-        auto neighborsNeighborhood = neighbors(ind);
+    for(; !q.empty(); q.pop()) {
+        size_t currentIndex = q.front();
+        Square& currentSquare = (*this)(currentIndex);
+        
+        Position pos = unravelIndex(currentIndex);
+        std::cerr << "Popping " << pos.first << ", " << pos.second << '\n';
+        
+        if(currentSquare.surroundingMines() != 0) continue;
+        auto neighborsNeighborhood = neighbors(currentIndex);
         for(auto it = neighborsNeighborhood.begin(); it != neighborsNeighborhood.end(); ++it) {
-            if(it->state() == Square::Closed & it->surroundingMines() == 0) {
+            if(it->state() == Square::Closed) {
                 it->setState(Square::Open);
                 q.push(it.flatIndex());
+                
+                Position pos2 = unravelIndex(it.flatIndex());
+                std::cerr << "Pushing " << pos2.first << ", " << pos2.second << '\n';
             }
         }
-        q.pop();
     }
 }
