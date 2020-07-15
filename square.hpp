@@ -1,9 +1,7 @@
 #ifndef SQUARE_HPP
 #define SQUARE_HPP
 
-#include <bitset>
 #include <cstdint>
-#include <iostream>
 
 class Square {
 public:
@@ -28,7 +26,6 @@ public:
     
     inline void setState(State state) {
         _data = (_data & ~state_mask) | state;
-        std::cerr << std::bitset<8>(_data) << std::endl;
     }
     
     inline uint_least8_t surroundingMines() const {

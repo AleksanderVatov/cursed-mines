@@ -177,6 +177,10 @@ public:
                 return _neighborhood->_grid->operator()(flatIndex());
             }
             
+            Type * operator->() {
+                return &_neighborhood->_grid->operator()(flatIndex());
+            }
+            
             Position pos() const {
                 return _neighborhood->_grid->unravelIndex(flatIndex());
             }
