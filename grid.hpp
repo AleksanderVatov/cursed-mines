@@ -239,6 +239,11 @@ public:
         return Neighborhood(this, row, col);
     }
     
+    Neighborhood neighbors(std::size_t flatIndex) {
+        Position pos = unravelIndex(flatIndex);
+        return neighbors(pos.first, pos.second);
+    }
+    
     inline std::size_t flatIndex (std::size_t row, std::size_t col) const {
         return row*_width + col;
     }
