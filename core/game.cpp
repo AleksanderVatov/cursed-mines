@@ -86,17 +86,16 @@ Game::State Game::reveal(std::size_t y, std::size_t x) {
     return _state;
 }
 
-Game::State Game::revealUnflaggedNeighbors ( std::size_t y, std::size_t x )
-{
-    bool lostGame = false;
-    for(Square & sq: neighbors(y, x)) {
-        if(sq.state() == Square::Closed) {
-            sq.setState(Square::Open);
-            if(sq.isMined()) lostGame = true;
-            else if(sq.surroundingMines() == 0) reveal(y, x);
+Game::State Game::revealUnflaggedNeighbors ( std::size_t y, std::size_t x ) {
+    
+    auto neighborhood = neighbors(y, x);
+    for(auto it = neighborhood.begin(); it != neighborhood.end(); ++it) {
+        if(it->state() == Square::Closed) {
+            Position pos = it.pos();
+            reveal(pos.first, pos.second);
         }
     }
-    if(lostGame) _state = Lost;
+    
     return _state;
 }
 
