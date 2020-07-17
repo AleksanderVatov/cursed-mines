@@ -12,6 +12,7 @@ public:
     Minefield(Minefield &&) = default;
         
     bool reveal(std::size_t y, std::size_t x);
+    bool revealUnflaggedNeighbors(std::size_t y, std::size_t x);
     void toggleFlag(std::size_t y, std::size_t x);
     
     void plantMines(std::set<std::size_t> const & locations);

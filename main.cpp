@@ -11,7 +11,8 @@ const char* surrounding[9] = {"  ", "1 ","2 ","3 ","4 ","5 ","6 ","7 ","8 "};
 enum GameState {
     NotStarted,
     Running,
-    Over
+    Lost,
+    Won
 };
 
 void drawField(WINDOW* win, Minefield const& field) {
@@ -20,7 +21,7 @@ void drawField(WINDOW* win, Minefield const& field) {
         switch(sq.state()) {
             case Square::Open:
                 if(sq.isMined()) 
-                    waddstr(win, "💥"); //Too wide
+                    waddstr(win, "💥");
                 else {
                     auto surroundingMines = sq.surroundingMines();
                     wattron(win, COLOR_PAIR(surroundingMines));
@@ -48,7 +49,7 @@ int main(int argc, char **argv) {
     Minefield field(10, 10);
     GameState state = NotStarted;
     
-    field.plantMines(10, 0, 0);
+//     field.plantMines(10, 0, 0);
 //     field.reveal(0, 0);
 //     for(Square & sq: field) sq.setState(Square::Open);
     
@@ -83,31 +84,32 @@ int main(int argc, char **argv) {
     MEVENT mouseEvent;
     for(int c = wgetch(win); ; c = wgetch(win)) {
         switch(c) {
-            case KEY_MOUSE:
+            case KEY_MOUSE: {
 //                     std::cout << '\a' << std::flush;
 //                     mvaddstr(0, 0, "Received mouse event");
 //                     refresh();
 //                 if(getmouse(&mouseEvent) == OK) {
                     getmouse(&mouseEvent);
-                    if(mouseEvent.bstate & BUTTON1_RELEASED) {
-                        int y = mouseEvent.y - win_y0, x = (mouseEvent.x - win_x0)/2;
+                    int y = mouseEvent.y - win_y0, x = (mouseEvent.x - win_x0)/2;
+                    if(mouseEvent.bstate & (BUTTON1_CLICKED | BUTTON1_PRESSED)) {
 //                         mvprintw(0, 0, "Received click at %i,%i", y, x);
 //                         refresh();
                         switch(state) {
                             case NotStarted:
-                                field.plantMines(10, y, x);
+                                field.plantMines(15, y, x);
                                 field.reveal(y, x);
                                 state = Running;
                                 drawField(win, field);
                                 break;
                             case Running:
+                                if(field(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
                                 if(field.reveal(y, x)) {
                                     mvprintw(0, 0, "Game lost!");
                                     for(Square & sq: field) sq.setState(Square::Open);
                                 }
                                 drawField(win, field);
                                 break;
-                            case Over:
+                            case Lost:
                                 break;
                         }
                         field.reveal(y, x);
@@ -115,15 +117,22 @@ int main(int argc, char **argv) {
 //                         wrefresh(win);
                         refresh();
                     }
-                    else if(mouseEvent.bstate & BUTTON3_RELEASED) {
-                        int y = mouseEvent.y - win_y0, x = (mouseEvent.x - win_x0)/2;
+                    else if(mouseEvent.bstate & (BUTTON3_CLICKED | BUTTON3_PRESSED)) {
 //                         mvprintw(0, 0, "Received right click at %i,%i", y, x);
 //                         refresh();
                         field.toggleFlag(y, x);
                         drawField(win, field);
                     }
+                    else if(mouseEvent.bstate & BUTTON1_DOUBLE_CLICKED) {
+                        if(field.revealUnflaggedNeighbors(y, x)) {
+                            state = Lost;
+                            mvprintw(0, 0, "Game lost!");
+                        }
+                        drawField(win, field);
+                    }
 //                 }
                 break;
+            }
             case 'q':
             case 'Q':
                 endwin();

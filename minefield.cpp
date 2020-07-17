@@ -79,6 +79,18 @@ bool Minefield::reveal(std::size_t y, std::size_t x) {
     return false;
 }
 
+bool Minefield::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
+    bool lostGame = false;
+    for(Square & sq: neighbors(y, x)) {
+        if(sq.state() == Square::Closed) {
+            sq.setState(Square::Open);
+            if(sq.isMined()) lostGame = true;
+        }
+    }
+    return lostGame;
+}
+
+
 void Minefield::toggleFlag(std::size_t y, std::size_t x) {
     Square & sq = (*this)(y, x);
     switch(sq.state()) {
