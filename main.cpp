@@ -3,9 +3,10 @@
 #include <clocale>
 #include <iostream>
 
-#include "minefield.hpp"
+#include "game.hpp"
+#include "gameview.hpp"
 
-const char* surrounding[9] = {"  ", "1 ","2 ","3 ","4 ","5 ","6 ","7 ","8 "};
+
 // const char* surrounding[9] = {"  ", "1.","2.","3.","4.","5.","6.","7.","8."};
 
 std::size_t field_height = 20, field_width = 20;
@@ -17,38 +18,8 @@ enum GameState {
     Won
 };
 
-void drawField(WINDOW* win, Minefield const& field) {
-    wmove(win, 0, 0);
-    for(Square sq: field) {
-        switch(sq.state()) {
-            case Square::Open:
-                if(sq.isMined()) 
-                    waddstr(win, "💥");
-                else {
-                    auto surroundingMines = sq.surroundingMines();
-                    wattron(win, COLOR_PAIR(surroundingMines));
-                    waddstr(win, surrounding[surroundingMines]);
-                    wattroff(win, COLOR_PAIR(surroundingMines));
-                }
-                break;
-            case Square::Flagged:
-                waddstr(win, "🚩");
-                break;
-            case Square::QuestionMark:
-                waddstr(win, "❔");
-                break;
-            case Square::Closed:
-            default:
-                waddstr(win, "⬛");
-                break;
-        }
-//         wattron(win,COLOR_PAIR(0));
-    }
-    wrefresh(win);
-}
-
 int main(int argc, char **argv) {
-    Minefield field(field_height, field_width);
+    Game game(field_height, field_width);
     GameState state = NotStarted;
     
 //     field.plantMines(10, 0, 0);
@@ -79,12 +50,12 @@ int main(int argc, char **argv) {
     refresh(); // Apparently a refresh is needed after initscr.
         
     int win_h = field_height, win_w = 2*field_width, win_y0 = (LINES - win_h)/2, win_x0 = (COLS - win_w) / 2;
-    WINDOW * win = newwin(win_h, win_w, win_y0, win_x0);
-    keypad(win, TRUE);
 //     wborder(win, 0, 0, 0, 0, 0, 0, 0, 0);
-    drawField(win, field);
+    GameView *win = new GameView(win_h, win_w, win_y0, win_x0);
+    win->setGame(&game);
+    win->draw();
     MEVENT mouseEvent;
-    for(int c = wgetch(win); ; c = wgetch(win)) {
+    for(int c = wgetch(win->win()); ; c = wgetch(win->win())) {
         switch(c) {
             case KEY_MOUSE: {
 //                     std::cout << '\a' << std::flush;
@@ -99,50 +70,50 @@ int main(int argc, char **argv) {
 //                         refresh();
                         switch(state) {
                             case NotStarted:
-                                field.plantMines(0.15*(field_height*field_width), y, x);
-                                field.reveal(y, x);
+                                game.plantMines(0.15*(field_height*field_width), y, x);
+                                game.reveal(y, x);
                                 state = Running;
-                                drawField(win, field);
+                                win->draw();
                                 break;
                             case Running:
-                                if(field(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
-                                if(field.reveal(y, x)) {
+                                if(game(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
+                                if(game.reveal(y, x)) {
                                     mvprintw(0, 0, "Game lost!");
-                                    for(Square & sq: field) sq.setState(Square::Open);
+                                    for(Square & sq: game) sq.setState(Square::Open);
                                 }
-                                drawField(win, field);
+                                win->draw();
                                 break;
                             case Lost:
                                 break;
                         }
-                        field.reveal(y, x);
-                        drawField(win, field);
+                        game.reveal(y, x);
+                        win->draw();
 //                         wrefresh(win);
                         refresh();
                     }
                     else if(mouseEvent.bstate & (BUTTON3_CLICKED | BUTTON3_PRESSED)) {
 //                         mvprintw(0, 0, "Received right click at %i,%i", y, x);
 //                         refresh();
-                        field.toggleFlag(y, x);
-                        drawField(win, field);
+                        game.toggleFlag(y, x);
+                        win->draw();
                     }
                     else if(mouseEvent.bstate & BUTTON1_DOUBLE_CLICKED) {
-                        if(field.revealUnflaggedNeighbors(y, x)) {
+                        if(game.revealUnflaggedNeighbors(y, x)) {
                             state = Lost;
                             mvprintw(0, 0, "Game lost!");
                         }
-                        drawField(win, field);
+                        win->draw();
                     }
 //                 }
                 break;
             }
             case 'n':
             case 'N':
-                field.reset();
+                game.reset();
                 state = NotStarted;
                 clear();
                 refresh(); // The screen needs to be refreshed after it's cleared and before drawing
-                drawField(win, field);
+                win->draw();
                 break;
             case 'q':
             case 'Q':

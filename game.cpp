@@ -1,4 +1,4 @@
-#include "minefield.hpp"
+#include "game.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -6,10 +6,10 @@
 #include <queue>
 #include <set>
 
-Minefield::Minefield(std::size_t height, std::size_t width): Grid<Square>(height, width) {}
+Game::Game(std::size_t height, std::size_t width): Grid<Square>(height, width) {}
 
 
-void Minefield::plantMines(std::set<std::size_t> const & locations) {
+void Game::plantMines(std::set<std::size_t> const & locations) {
     for(size_t ind: locations) {
         Square& sq = (*this)(ind);
         if(!sq.isMined()) {
@@ -20,7 +20,7 @@ void Minefield::plantMines(std::set<std::size_t> const & locations) {
     
 };
 
-void Minefield::plantMines(unsigned int number, std::set<std::size_t> const& locationsToAvoid) {
+void Game::plantMines(unsigned int number, std::set<std::size_t> const& locationsToAvoid) {
     std::set<std::size_t> locations;
     std::size_t currentRandom;
     std::size_t size = height() * width();
@@ -36,7 +36,7 @@ void Minefield::plantMines(unsigned int number, std::set<std::size_t> const& loc
     plantMines(locations);
 }
 
-void Minefield::plantMines(unsigned int number, std::size_t revealedY, std::size_t revealedX) {
+void Game::plantMines(unsigned int number, std::size_t revealedY, std::size_t revealedX) {
     std::set<std::size_t> locationsToAvoid;
     locationsToAvoid.insert(flatIndex(revealedY, revealedX));
     
@@ -48,7 +48,7 @@ void Minefield::plantMines(unsigned int number, std::size_t revealedY, std::size
 }
 
 
-bool Minefield::reveal(std::size_t y, std::size_t x) {
+bool Game::reveal(std::size_t y, std::size_t x) {
     //The non-recursive version of the flood fill algorithm (sometimes called forest fire) is used
     std::queue<std::size_t> q;
     Neighborhood neighborhood = neighbors(y, x);
@@ -80,7 +80,7 @@ bool Minefield::reveal(std::size_t y, std::size_t x) {
     return false;
 }
 
-bool Minefield::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
+bool Game::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
     bool lostGame = false;
     for(Square & sq: neighbors(y, x)) {
         if(sq.state() == Square::Closed) {
@@ -93,7 +93,7 @@ bool Minefield::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
 }
 
 
-void Minefield::toggleFlag(std::size_t y, std::size_t x) {
+void Game::toggleFlag(std::size_t y, std::size_t x) {
     Square & sq = (*this)(y, x);
     switch(sq.state()) {
         case Square::Closed:
@@ -108,6 +108,6 @@ void Minefield::toggleFlag(std::size_t y, std::size_t x) {
     }
 }
 
-void Minefield::reset() {
+void Game::reset() {
     std::fill(begin(), end(), Square());
 }

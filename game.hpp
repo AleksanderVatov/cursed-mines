@@ -6,10 +6,10 @@
 #include "grid.hpp"
 #include "square.hpp"
 
-class Minefield : public Grid<Square> {
+class Game : public Grid<Square> {
 public:
-    Minefield(std::size_t height, std::size_t width);
-    Minefield(Minefield &&) = default;
+    Game(std::size_t height, std::size_t width);
+    Game(Game &&) = default;
 
     void plantMines(std::set<std::size_t> const & locations);
     void plantMines(unsigned int number, std::set<std::size_t> const & locationsToAvoid = std::set<std::size_t>());

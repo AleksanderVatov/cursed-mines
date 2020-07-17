@@ -4,11 +4,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CURSES_NEED_WIDE TRUE)
+set(CURSES_NEED_WIDE TRUE) # Unicode support required
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 
-add_executable(mines main.cpp minefield.cpp square.cpp)
+add_executable(mines main.cpp game.cpp square.cpp gameview.cpp)
 target_link_libraries(mines ${CURSES_LIBRARY})
 
 if(BUILD_TESTING)
