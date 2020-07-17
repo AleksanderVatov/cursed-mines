@@ -117,11 +117,9 @@ int main(int argc, char **argv) {
                     }
                     else if(mouseEvent.bstate & BUTTON3_RELEASED) {
                         int y = mouseEvent.y - win_y0, x = (mouseEvent.x - win_x0)/2;
-                        Square & sq = field(y, x);
-                        mvprintw(0, 0, "Received right click at %i,%i", y, x);
-                        refresh();
-                        if(sq.state() == Square::Closed) sq.setState(Square::Flagged);
-                        else if(sq.state() == Square::Flagged) sq.setState(Square::Closed);
+//                         mvprintw(0, 0, "Received right click at %i,%i", y, x);
+//                         refresh();
+                        field.toggleFlag(y, x);
                         drawField(win, field);
                     }
 //                 }

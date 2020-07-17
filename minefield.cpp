@@ -78,3 +78,19 @@ bool Minefield::reveal(std::size_t y, std::size_t x) {
     }
     return false;
 }
+
+void Minefield::toggleFlag(std::size_t y, std::size_t x) {
+    Square & sq = (*this)(y, x);
+    switch(sq.state()) {
+        case Square::Closed:
+        case Square::QuestionMark:
+            sq.setState(Square::Flagged);
+            break;
+        case Square::Flagged:
+            sq.setState(Square::Closed);
+            break;
+        case Square::Open:
+            break;
+    }
+}
+

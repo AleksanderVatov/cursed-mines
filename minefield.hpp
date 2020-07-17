@@ -12,10 +12,14 @@ public:
     Minefield(Minefield &&) = default;
         
     bool reveal(std::size_t y, std::size_t x);
+    void toggleFlag(std::size_t y, std::size_t x);
     
     void plantMines(std::set<std::size_t> const & locations);
     void plantMines(unsigned int number, std::set<std::size_t> const & locationsToAvoid = std::set<std::size_t>());
     void plantMines(unsigned int number, std::size_t revealedY, std::size_t revealedX);
+    
+protected:
+//     using Grid<Square>::operator();
     
 };
 #endif // MINEFIELD_HPP
