@@ -6,7 +6,9 @@
 #include <queue>
 #include <set>
 
-Game::Game(std::size_t height, std::size_t width): Grid<Square>(height, width) {}
+Game::Game(std::size_t height, std::size_t width): Grid<Square>(height, width) {
+    _state = NotStarted;
+}
 
 
 void Game::plantMines(std::set<std::size_t> const & locations) {
@@ -48,17 +50,21 @@ void Game::plantMines(unsigned int number, std::size_t revealedY, std::size_t re
 }
 
 
-bool Game::reveal(std::size_t y, std::size_t x) {
+Game::State Game::reveal(std::size_t y, std::size_t x) {
     //The non-recursive version of the flood fill algorithm (sometimes called forest fire) is used
     std::queue<std::size_t> q;
     Neighborhood neighborhood = neighbors(y, x);
     std::size_t clickedIndex = flatIndex(y,x);
     Square & clickedSquare = (*this)(clickedIndex);
-    if(clickedSquare.state() == Square::Open) //Nothing to do
-        return false; // If there was a mine here, it was already detonated
+    if(clickedSquare.state() == Square::Open) {
+        return _state; // If there was a mine here, it was already detonated
+    }
     clickedSquare.setState(Square::Open);
-    if(clickedSquare.isMined()) return true;
-    if(clickedSquare.surroundingMines() != 0) return false;
+    if(clickedSquare.isMined()) {
+        _state = Lost;
+        return _state;
+    }
+    if(clickedSquare.surroundingMines() != 0) return _state;
     
     q.push(clickedIndex); //Push the clicked square to q
     for(Neighborhood::Iterator it = neighborhood.begin(); it != neighborhood.end(); ++it)
@@ -77,10 +83,11 @@ bool Game::reveal(std::size_t y, std::size_t x) {
             }
         }
     }
-    return false;
+    return _state;
 }
 
-bool Game::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
+Game::State Game::revealUnflaggedNeighbors ( std::size_t y, std::size_t x )
+{
     bool lostGame = false;
     for(Square & sq: neighbors(y, x)) {
         if(sq.state() == Square::Closed) {
@@ -89,7 +96,8 @@ bool Game::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
             else if(sq.surroundingMines() == 0) reveal(y, x);
         }
     }
-    return lostGame;
+    if(lostGame) _state = Lost;
+    return _state;
 }
 
 
@@ -108,6 +116,11 @@ void Game::toggleFlag(std::size_t y, std::size_t x) {
     }
 }
 
+void Game::start() {
+    _state = Running;
+}
+
 void Game::reset() {
     std::fill(begin(), end(), Square());
+    _state = NotStarted;
 }

@@ -8,6 +8,13 @@
 
 class Game : public Grid<Square> {
 public:
+    enum State {
+        NotStarted,
+        Running,
+        Lost,
+        Won
+};
+
     Game(std::size_t height, std::size_t width);
     Game(Game &&) = default;
 
@@ -15,14 +22,17 @@ public:
     void plantMines(unsigned int number, std::set<std::size_t> const & locationsToAvoid = std::set<std::size_t>());
     void plantMines(unsigned int number, std::size_t revealedY, std::size_t revealedX);
     
-    bool reveal(std::size_t y, std::size_t x);
-    bool revealUnflaggedNeighbors(std::size_t y, std::size_t x);
+    State reveal(std::size_t y, std::size_t x);
+    State revealUnflaggedNeighbors(std::size_t y, std::size_t x);
     void toggleFlag(std::size_t y, std::size_t x);
     
+    inline State state() {return _state;}
+    
+    void start();
     void reset();
     
-protected:
-//     using Grid<Square>::operator();
+private:
+    State _state;
     
 };
 #endif // MINEFIELD_HPP
