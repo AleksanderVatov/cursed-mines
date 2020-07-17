@@ -3,10 +3,12 @@
 #include <clocale>
 #include <iostream>
 
-#include "ui/screen.hpp"
+#include "ui/app.hpp"
+
+GameView * App::gameView;
+Game * App::game;
 
 
 int main(int argc, char **argv) {
-    Screen().loop();
-    
+    App();
 }
