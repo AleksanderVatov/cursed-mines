@@ -8,6 +8,8 @@
 const char* surrounding[9] = {"  ", "1 ","2 ","3 ","4 ","5 ","6 ","7 ","8 "};
 // const char* surrounding[9] = {"  ", "1.","2.","3.","4.","5.","6.","7.","8."};
 
+std::size_t field_height = 20, field_width = 20;
+
 enum GameState {
     NotStarted,
     Running,
@@ -46,7 +48,7 @@ void drawField(WINDOW* win, Minefield const& field) {
 }
 
 int main(int argc, char **argv) {
-    Minefield field(10, 10);
+    Minefield field(field_height, field_width);
     GameState state = NotStarted;
     
 //     field.plantMines(10, 0, 0);
@@ -76,7 +78,7 @@ int main(int argc, char **argv) {
 
     refresh(); // Apparently a refresh is needed after initscr.
         
-    int win_h = 10, win_w = 20, win_y0 = (LINES - win_h)/2, win_x0 = (COLS - win_w) / 2;
+    int win_h = field_height, win_w = 2*field_width, win_y0 = (LINES - win_h)/2, win_x0 = (COLS - win_w) / 2;
     WINDOW * win = newwin(win_h, win_w, win_y0, win_x0);
     keypad(win, TRUE);
 //     wborder(win, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -91,12 +93,13 @@ int main(int argc, char **argv) {
 //                 if(getmouse(&mouseEvent) == OK) {
                     getmouse(&mouseEvent);
                     int y = mouseEvent.y - win_y0, x = (mouseEvent.x - win_x0)/2;
+                    if(y < 0 || y >= field_height || x < 0 || x > field_width) break;
                     if(mouseEvent.bstate & (BUTTON1_CLICKED | BUTTON1_PRESSED)) {
 //                         mvprintw(0, 0, "Received click at %i,%i", y, x);
 //                         refresh();
                         switch(state) {
                             case NotStarted:
-                                field.plantMines(15, y, x);
+                                field.plantMines(0.15*(field_height*field_width), y, x);
                                 field.reveal(y, x);
                                 state = Running;
                                 drawField(win, field);
@@ -133,6 +136,14 @@ int main(int argc, char **argv) {
 //                 }
                 break;
             }
+            case 'n':
+            case 'N':
+                field.reset();
+                state = NotStarted;
+                clear();
+                refresh(); // The screen needs to be refreshed after it's cleared and before drawing
+                drawField(win, field);
+                break;
             case 'q':
             case 'Q':
                 endwin();

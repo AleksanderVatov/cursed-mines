@@ -1,5 +1,6 @@
 #include "minefield.hpp"
 
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <queue>
@@ -85,6 +86,7 @@ bool Minefield::revealUnflaggedNeighbors(std::size_t y, std::size_t x) {
         if(sq.state() == Square::Closed) {
             sq.setState(Square::Open);
             if(sq.isMined()) lostGame = true;
+            else if(sq.surroundingMines() == 0) reveal(y, x);
         }
     }
     return lostGame;
@@ -106,3 +108,6 @@ void Minefield::toggleFlag(std::size_t y, std::size_t x) {
     }
 }
 
+void Minefield::reset() {
+    std::fill(begin(), end(), Square());
+}
