@@ -21,6 +21,17 @@ int main(int argc, char **argv) {
     noecho(); // Do not write input characters to screen
     nodelay(stdscr, TRUE); // Make getch return ERR in the absence of input rather than waiting
     curs_set(0); // Hide cursor
+    start_color(); // Initialize colors
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(3, COLOR_CYAN, COLOR_BLACK);
+    init_pair(4, COLOR_RED, COLOR_BLACK);
+    init_pair(5, COLOR_BLUE, COLOR_BLACK);
+    init_pair(6, COLOR_WHITE, COLOR_BLACK);
+    init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(8, COLOR_BLACK, COLOR_RED);
+//     init_pair(1, COLOR_BLACK, COLOR_GREEN);
+//     init_pair(2, COLOR_BLACK, COLOR_RED);
     refresh(); // Apparently a refresh is needed after initscr.
         
     int win_h = 10, win_w = 20;
@@ -32,8 +43,12 @@ int main(int argc, char **argv) {
                 if(sq.isMined()) 
                     waddstr(win, "💥"); //Too wide
 //                     waddch(win, '*'); 
-                else waddstr(win, surrounding[sq.surroundingMines()]);
-//                 else waddch(win, '0' + sq.surroundingMines());
+                else {
+                    wattron(win, COLOR_PAIR(sq.surroundingMines()));
+//                  waddch(win, '0' + sq.surroundingMines());
+                    waddstr(win, surrounding[sq.surroundingMines()]);
+                    wattroff(win, COLOR_PAIR(sq.surroundingMines()));
+                }
                 break;
             case Square::Flagged:
                 waddstr(win, "🚩");
@@ -46,6 +61,7 @@ int main(int argc, char **argv) {
                 waddstr(win, "⬛");
                 break;
         }
+//         wattron(win,COLOR_PAIR(0));
     }
     wrefresh(win);
     while(getch() == ERR);
