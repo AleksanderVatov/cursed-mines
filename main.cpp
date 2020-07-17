@@ -3,8 +3,8 @@
 #include <clocale>
 #include <iostream>
 
-#include "game.hpp"
-#include "gameview.hpp"
+#include "core/game.hpp"
+#include "ui/gameview.hpp"
 
 
 // const char* surrounding[9] = {"  ", "1.","2.","3.","4.","5.","6.","7.","8."};
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
     win->setGame(&game);
     win->draw();
     MEVENT mouseEvent;
-    for(int c = wgetch(win->win()); ; c = wgetch(win->win())) {
+    for(int c = wgetch(win->_win); ; c = wgetch(win->_win)) {
         switch(c) {
             case KEY_MOUSE: {
 //                     std::cout << '\a' << std::flush;
