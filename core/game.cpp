@@ -13,7 +13,7 @@ Game::Game(std::size_t height, std::size_t width): Grid<Square>(height, width) {
 
 void Game::plantMines(std::set<std::size_t> const & locations) {
     for(size_t ind: locations) {
-        Square& sq = (*this)(ind);
+        Square& sq = at(ind);
         if(!sq.isMined()) {
             sq.setMined(true);
             for(Square& n: neighbors(ind)) n.incrementSurroundingMines();
@@ -55,7 +55,7 @@ Game::State Game::reveal(std::size_t y, std::size_t x) {
     std::queue<std::size_t> q;
     Neighborhood neighborhood = neighbors(y, x);
     std::size_t clickedIndex = flatIndex(y,x);
-    Square & clickedSquare = (*this)(clickedIndex);
+    Square & clickedSquare = at(clickedIndex);
     if(clickedSquare.state() == Square::Open) {
         return _state; // If there was a mine here, it was already detonated
     }
@@ -72,7 +72,7 @@ Game::State Game::reveal(std::size_t y, std::size_t x) {
     
     for(; !q.empty(); q.pop()) {
         size_t currentIndex = q.front();
-        Square& currentSquare = (*this)(currentIndex);
+        Square const& currentSquare = get(currentIndex);
         if(currentSquare.surroundingMines() != 0) continue;
         
         auto neighborsNeighborhood = neighbors(currentIndex);
@@ -92,7 +92,7 @@ Game::State Game::revealUnflaggedNeighbors ( std::size_t y, std::size_t x ) {
     for(auto it = neighborhood.begin(); it != neighborhood.end(); ++it) {
         if(it->state() == Square::Closed) {
             Position pos = it.pos();
-            reveal(pos.first, pos.second);
+            reveal(pos.row, pos.col);
         }
     }
     
@@ -101,7 +101,7 @@ Game::State Game::revealUnflaggedNeighbors ( std::size_t y, std::size_t x ) {
 
 
 void Game::toggleFlag(std::size_t y, std::size_t x) {
-    Square & sq = (*this)(y, x);
+    Square & sq = at(y, x);
     switch(sq.state()) {
         case Square::Closed:
         case Square::QuestionMark:

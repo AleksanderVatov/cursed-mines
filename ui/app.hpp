@@ -2,6 +2,7 @@
 #define APP_HPP
 
 #include "gameview.hpp"
+#include "menu.hpp"
 
 class App {
 public:
@@ -13,6 +14,7 @@ public:
     
     static GameView* gameView;
     static Game* game;
+    static Menu* menu;
 private:
     static bool _loop;
 };

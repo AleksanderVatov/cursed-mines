@@ -24,9 +24,9 @@ BOOST_AUTO_TEST_CASE(General) {
     Grid <char> g(2,3);
     BOOST_TEST(g.width() == 3);
     BOOST_TEST(g.height() == 2);
-    BOOST_CHECK_THROW(g(5,5), std::out_of_range);
-    g(0,0)='a'; g(0,1)='b'; g(0,2)='c';
-    g(1,0)='d'; g(1,1)='e'; g(1,2)='f';
+    BOOST_CHECK_THROW(g.at(5,5), std::out_of_range);
+    g.at(0,0)='a'; g.at(0,1)='b'; g.at(0,2)='c';
+    g.at(1,0)='d'; g.at(1,1)='e'; g.at(1,2)='f';
     BOOST_TEST(g.toString("|","\t") == "a|b|c\td|e|f");
     BOOST_TEST(Grid<int>(1,3).toString() == "000"); //Checks correct initialization
 }

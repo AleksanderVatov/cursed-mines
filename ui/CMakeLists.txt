@@ -1,6 +1,7 @@
 set(UI_SOURCE 
     ${CMAKE_CURRENT_SOURCE_DIR}/app.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorscheme.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/menu.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gameview.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widget.cpp
     PARENT_SCOPE

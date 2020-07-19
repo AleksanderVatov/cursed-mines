@@ -5,7 +5,10 @@
 #include "colorscheme.hpp"
 #include "app.hpp"
 
-bool App::_loop;
+bool       App::_loop;
+Game     * App::game;
+GameView * App::gameView;
+Menu     * App::menu;
 
 App::App() {
     //Set up curses
@@ -22,12 +25,13 @@ App::App() {
     mousemask(ALL_MOUSE_EVENTS, nullptr);
     refresh(); // Apparently a refresh is needed after initscr.
         
-    gameView = new GameView(LINES - 1, COLS, 1, 0);
+    gameView = new GameView(LINES - 1, COLS, 0, 0);
     game = new Game(gameView->maxGameHeight(), gameView->maxGameWidth());
     gameView->setGame(game);
     gameView->draw();
     
-    Widget::processInput();
+    menu = new Menu(1, COLS, LINES - 1, 0);
+    menu->draw();
 }
 
 App::~App() {

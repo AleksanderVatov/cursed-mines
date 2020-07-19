@@ -6,7 +6,7 @@
 #include "grid.hpp"
 #include "square.hpp"
 
-class Game : public Grid<Square> {
+class Game : protected Grid<Square> {
 public:
     enum State {
         NotStarted,
@@ -30,6 +30,12 @@ public:
     
     void start();
     void reset();
+    
+    using Grid<Square>::get;
+    using Grid<Square>::begin;
+    using Grid<Square>::end;
+    using Grid<Square>::height;
+    using Grid<Square>::width;
     
 private:
     State _state;

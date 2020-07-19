@@ -22,6 +22,6 @@ bool Menu::keyEvent (int ch){
             App::quit();
             return true;
         default:
-//          return false;
+         return false;
     }
 }

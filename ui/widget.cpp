@@ -54,7 +54,7 @@ void Widget::processInput(bool loop) {
                         Widget * w = *it;
                         if((*it)->keyEvent(ch))
                             break;
-                    }
+                }
         }
     } while(loop);
 }

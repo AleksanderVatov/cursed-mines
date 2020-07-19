@@ -21,7 +21,7 @@ int GameView::maxGameWidth() const {
 
 void GameView::draw() {
     wmove(window(), 0, 0);
-        for(Square sq: *_game) {
+        for(Square const & sq: *_game) {
             switch(sq.state()) {
                 case Square::Open:
                     if(sq.isMined()) 
@@ -63,7 +63,7 @@ bool GameView::mouseEvent (MEVENT* event) {
                 draw();
                 break;
             case Game::Running:
-                if((*_game)(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
+                if(_game->get(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
                 if(_game->reveal(y, x) == Game::Lost) {
                     mvprintw(0, 0, "Game lost!");
                     for(Square & sq: *_game) sq.setState(Square::Open);

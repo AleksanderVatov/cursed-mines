@@ -14,7 +14,13 @@
 template <class Type>
 class Grid {
 public:
-typedef std::pair<std::size_t, std::size_t> Position;
+    class Position {
+    public:
+        Position(std::size_t y, std::size_t x) : row(y), col(x) {}
+        std::size_t row;
+        std::size_t col;
+    };
+    
     Grid(std::size_t height, std::size_t width) {
         if(width == 0 || height == 0)
             throw std::invalid_argument("Grid::Grid(): Null width and/or height!");
@@ -30,36 +36,60 @@ typedef std::pair<std::size_t, std::size_t> Position;
         if(_array) delete [] _array;
     }
     
-    Type & operator()(std::size_t row, std::size_t col) {
+    Type & at(std::size_t row, std::size_t col) {
         if(row >= _height || col >= _width)
-            throw std::out_of_range("Grid::operator(): Cell out of range!");
-        return _array[flatIndex (row,col)];
+            throw std::out_of_range("Grid::at(): Cell out of range!");
+        return _array[flatIndex(row, col)];
     }
     
-    Type const & operator()(std::size_t row, std::size_t col) const {
-        if(row >= _height || col >= _width)
-            throw std::out_of_range("Grid::operator(): Cell out of range!");
-        return _array[flatIndex (row,col)];
-    }
-    
-    Type & operator()(Position pos) {
-        return operator()(pos.first, pos.second);
-    }
-    
-    Type const & operator()(Position pos) const {
-        return operator()(pos.first, pos.second);
-    }
-    
-    Type & operator()(std::size_t flatIndex) {
+    Type & at(std::size_t flatIndex) {
         if(flatIndex >= _width*_height)
-            throw std::out_of_range("Grid::operator(): Flat index out of range!");
+            throw std::out_of_range("Grid::at(): Flat index out of range!");
         return _array[flatIndex];
     }
     
-    Type const & operator()(std::size_t flatIndex) const {
+    Type & at(Position const & pos) {
+        return at(pos.first, pos.second);
+    }
+     
+    Type const & get(std::size_t row, std::size_t col) const {
+        if(row >= _height || col >= _width)
+            throw std::out_of_range("Grid::get(): Cell out of range!");
+        return _array[flatIndex(row,col)];
+    }
+    
+    Type const & get(std::size_t flatIndex) const {
         if(flatIndex >= _width*_height)
-            throw std::out_of_range("Grid::operator(): Flat index out of range!");
+            throw std::out_of_range("Grid::get(): Flat index out of range!");
         return _array[flatIndex];
+    }
+    
+    Type const & get(Position const & pos) const {
+        return get(pos.first, pos.second);
+    }
+    
+    inline Type & operator()(std::size_t row, std::size_t col) {
+        return at(row, col);
+    }
+    
+    inline Type const & operator()(std::size_t row, std::size_t col) const {
+        return get(row, col);
+    }
+    
+    inline Type & operator()(Position pos) {
+        return at(pos.first, pos.second);
+    }
+    
+    inline Type const & operator()(Position pos) const {
+        return get(pos.first, pos.second);
+    }
+    
+    inline Type & operator()(std::size_t flatIndex) {
+        return at(flatIndex);
+    }
+    
+    inline Type const & operator()(std::size_t flatIndex) const {
+        return get(flatIndex);
     }
     
     bool operator==(Grid<Type> const & other) const {
@@ -174,11 +204,11 @@ typedef std::pair<std::size_t, std::size_t> Position;
             }
             
             Type& operator*() {
-                return _neighborhood->_grid->operator()(flatIndex());
+                return _neighborhood->_grid->at(flatIndex());
             }
             
             Type * operator->() {
-                return &_neighborhood->_grid->operator()(flatIndex());
+                return &_neighborhood->_grid->at(flatIndex());
             }
             
             Position pos() const {
@@ -239,13 +269,13 @@ typedef std::pair<std::size_t, std::size_t> Position;
     
     Neighborhood neighbors(std::size_t row, std::size_t col) {
         if(row >= _height || col >= _width)
-            throw std::out_of_range("Grid::operator(): Point out of range!");
+            throw std::out_of_range("Grid::neighbors(): Point out of range!");
         return Neighborhood(this, row, col);
     }
     
     Neighborhood neighbors(std::size_t flatIndex) {
         Position pos = unravelIndex(flatIndex);
-        return neighbors(pos.first, pos.second);
+        return neighbors(pos.row, pos.col);
     }
     
     inline std::size_t flatIndex (std::size_t row, std::size_t col) const {
@@ -253,7 +283,7 @@ typedef std::pair<std::size_t, std::size_t> Position;
     }
     
     inline std::size_t flatIndex(Position const & pos) const {
-        return flatIndex(pos.first, pos.second);
+        return flatIndex(pos.row, pos.col);
     }
     
     inline Position unravelIndex(std::size_t flatIndex) const {
