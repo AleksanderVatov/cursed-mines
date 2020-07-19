@@ -3,6 +3,7 @@
 
 #include "gameview.hpp"
 #include "menu.hpp"
+#include "statusbar.hpp"
 
 class App {
 public:
@@ -15,8 +16,11 @@ public:
     static GameView* gameView;
     static Game* game;
     static Menu* menu;
+    
+    static inline Statusbar* const statusbar() {return _statusbar;};
 private:
     static bool _loop;
+    static Statusbar* _statusbar;
 };
 
 #endif // APP_HPP

@@ -31,9 +31,10 @@ public:
     void start();
     void reset();
     
-    using Grid<Square>::get;
-    using Grid<Square>::begin;
-    using Grid<Square>::end;
+    Square const * begin() const;
+    Square const * end() const;
+    
+    using Grid<Square>::get; // Get *const* reference to Square at position y, x
     using Grid<Square>::height;
     using Grid<Square>::width;
     

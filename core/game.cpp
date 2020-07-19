@@ -120,6 +120,14 @@ void Game::start() {
 }
 
 void Game::reset() {
-    std::fill(begin(), end(), Square());
+    std::fill(Grid<Square>::begin(), Grid<Square>::end(), Square());
     _state = NotStarted;
+}
+
+Square const * Game::begin() const {
+    return Grid<Square>::begin();
+}
+
+Square const * Game::end() const {
+    return Grid<Square>::end();
 }

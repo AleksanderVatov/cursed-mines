@@ -1,3 +1,4 @@
+#include "app.hpp"
 #include "gameview.hpp"
 
 constexpr const char* GameView::SURROUNDING_STRINGS[];
@@ -65,8 +66,8 @@ bool GameView::mouseEvent (MEVENT* event) {
             case Game::Running:
                 if(_game->get(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
                 if(_game->reveal(y, x) == Game::Lost) {
-                    mvprintw(0, 0, "Game lost!");
-                    for(Square & sq: *_game) sq.setState(Square::Open);
+                    App::statusbar()->setText("Game lost!");
+//                     for(Square & sq: *_game) sq.setState(Square::Open);
                 }
                 draw();
                 break;
@@ -85,7 +86,7 @@ bool GameView::mouseEvent (MEVENT* event) {
     }
     else if(event->bstate & BUTTON1_DOUBLE_CLICKED) {
         if(_game->revealUnflaggedNeighbors(y, x) == Game::Lost) {
-            mvprintw(0, 0, "Game lost!");
+            App::statusbar()->setText("Game lost!");
         }
         draw();
         return true;

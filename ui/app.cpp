@@ -9,6 +9,7 @@ bool       App::_loop;
 Game     * App::game;
 GameView * App::gameView;
 Menu     * App::menu;
+Statusbar* App::_statusbar = nullptr;
 
 App::App() {
     //Set up curses
@@ -25,10 +26,13 @@ App::App() {
     mousemask(ALL_MOUSE_EVENTS, nullptr);
     refresh(); // Apparently a refresh is needed after initscr.
         
-    gameView = new GameView(LINES - 1, COLS, 0, 0);
+    gameView = new GameView(LINES - 2, COLS, 1, 0);
     game = new Game(gameView->maxGameHeight(), gameView->maxGameWidth());
     gameView->setGame(game);
     gameView->draw();
+    
+    _statusbar = new Statusbar(1, COLS, 0, 0);
+    _statusbar->setText("Cursed Minesweeper");
     
     menu = new Menu(1, COLS, LINES - 1, 0);
     menu->draw();
