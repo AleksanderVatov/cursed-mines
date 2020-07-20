@@ -24,10 +24,8 @@ void Statusbar::calculateLayout() {
 
 
 void Statusbar::draw() {
-//     wattron(window(), COLOR_PAIR(ColorScheme::Statusbar));
     wclear(window());
     wmove(window(), 0, (width() - _text.length()) / 2);
     waddstr(window(), _text.c_str());
-//     wattroff(window(), COLOR_PAIR(ColorScheme::Statusbar));
     wrefresh(window());
 }

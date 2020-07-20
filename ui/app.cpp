@@ -5,7 +5,6 @@
 #include "colorscheme.hpp"
 #include "app.hpp"
 
-bool       App::_loop;
 Game     * App::game;
 GameView * App::gameView;
 Menu     * App::menu;
@@ -45,13 +44,12 @@ App::~App() {
     endwin();
 }
 
-void App::loop() {
-    _loop = true;
-    while(_loop) Widget::processInput(false);
+void App::run() {
+    Widget::eventLoop();
 }
 
 void App::quit() {
-    _loop = false;
+    Widget::quitEventLoop();
 }
 
 

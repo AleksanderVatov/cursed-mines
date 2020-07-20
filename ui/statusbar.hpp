@@ -12,8 +12,8 @@ public:
     std::string const & text() const;
     void setText(std::string const& newText);
     
-protected:
     virtual void draw() override;
+protected:
     
     void calculateLayout();
     

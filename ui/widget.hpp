@@ -15,7 +15,9 @@ public:
     inline int y0() const {return _y0;}
     inline int x0() const {return _x0;}
     
-    static void processInput(bool loop = true);
+    static void eventLoop();
+    static void processEvents();
+    static void quitEventLoop();
 protected:
     inline WINDOW * window() {return _win;};
     virtual bool mouseEvent(MEVENT *);
@@ -24,9 +26,10 @@ protected:
     virtual void draw() = 0;
     
 private:
-    static std::vector<Widget*> _widgets;
     WINDOW * _win;
     int _height, _width, _y0, _x0;
+    static std::vector<Widget*> _widgets;
+    static bool _loop;
     
 };
 #endif // WIDGET_HPP

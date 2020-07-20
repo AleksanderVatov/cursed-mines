@@ -3,6 +3,7 @@
 #include "widget.hpp"
 
 std::vector<Widget*> Widget::_widgets;
+bool Widget::_loop = false;
 
 Widget::Widget(int height, int width, int y0, int x0 ) {
     _height = height;
@@ -28,33 +29,40 @@ bool Widget::keyEvent (int ch) {
     return false;
 }
 
-void Widget::processInput(bool loop) {
-        MEVENT mouseEvent;
-    do {
-        int ch;
-        switch(ch = getch()) {
-            case KEY_MOUSE:
-//                     std::cout << '\a' << std::flush;
-//                     mvaddstr(0, 0, "Received mouse event");
-//                     refresh();
+void Widget::processEvents() {
+    int ch;
+    MEVENT mouseEvent;
+    switch(ch = getch()) {
+        case KEY_MOUSE:
 //                 if(getmouse(&mouseEvent) == OK) {
-                    getmouse(&mouseEvent);
-                    for(auto it = _widgets.rbegin(); it != _widgets.rend(); ++it) {
-                        Widget * w = *it;
-                        if(mouseEvent.y - w->y0() < w->height() && mouseEvent.x - w->x0() < w->width())
-                            w->mouseEvent(&mouseEvent);
-                    }
-                    break;
-//                 }
-            case ERR:
-                break;
-            default:
-                // Pass to widgets
+                getmouse(&mouseEvent);
                 for(auto it = _widgets.rbegin(); it != _widgets.rend(); ++it) {
-                        Widget * w = *it;
-                        if((*it)->keyEvent(ch))
-                            break;
+                    Widget * w = *it;
+                    if(mouseEvent.y - w->y0() < w->height() && mouseEvent.x - w->x0() < w->width())
+                        w->mouseEvent(&mouseEvent);
                 }
-        }
-    } while(loop);
+                break;
+//                 }
+        case ERR:
+            break;
+        default:
+            // Pass to widgets
+            for(auto it = _widgets.rbegin(); it != _widgets.rend(); ++it) {
+                    Widget * w = *it;
+                    if((*it)->keyEvent(ch))
+                        break;
+            }
+    }
 }
+
+void Widget::eventLoop() {        
+    if(_loop) return;
+    _loop = true;
+    while(_loop) processEvents();
+}
+
+void Widget::quitEventLoop() {
+    _loop = false;
+}
+
+

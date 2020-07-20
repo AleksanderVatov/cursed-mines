@@ -10,7 +10,7 @@ public:
     App();
     ~App();
     
-    static void loop();
+    static void run();
     static void quit();    
     
     static GameView* gameView;
@@ -19,7 +19,6 @@ public:
     
     static inline Statusbar* const statusbar() {return _statusbar;};
 private:
-    static bool _loop;
     static Statusbar* _statusbar;
 };
 
