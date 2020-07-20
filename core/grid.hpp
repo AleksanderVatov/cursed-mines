@@ -1,7 +1,6 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <iterator>
@@ -117,6 +116,18 @@ public:
     
     Type * end() {
         return _array + _height*_width;
+    }
+    
+    Type const * row_begin(std::size_t row) const {
+        if(row >= _height)
+            throw std::out_of_range("Grid::row_begin(): Cell out of range!");
+        return _array + row*_width;
+    }
+    
+    Type const * row_end(std::size_t row) const {
+        if(row >= _height)
+            throw std::out_of_range("Grid::row_begin(): Cell out of range!");
+        return _array + row*(_width + 1);
     }
     
     Type const * end() const{

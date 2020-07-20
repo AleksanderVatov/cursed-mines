@@ -11,7 +11,9 @@ public:
     ~App();
     
     static void run();
-    static void quit();    
+    static void quit();
+    
+    static void newGame();
     
     static GameView* gameView;
     static Game* game;

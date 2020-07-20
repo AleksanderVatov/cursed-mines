@@ -10,6 +10,11 @@ public:
     virtual void draw() override;
     
 protected:
+    void calculateLayout();
     bool keyEvent (int ch) override;
+    
+private:
+    const static std::string options[];
+    unsigned short separatingSpace;
 };
 #endif // MENU_HPP

@@ -5,8 +5,9 @@
 class ColorScheme {
 public:
     enum Pair {
-        Statusbar = 9,
-        Menu = 10
+        Border = 9,
+        Statusbar = 10,
+        Menu = 11
     };
     static void initColors();
 };

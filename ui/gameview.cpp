@@ -1,58 +1,100 @@
 #include "app.hpp"
+#include "colorscheme.hpp"
 #include "gameview.hpp"
+
+#include <algorithm>
 
 constexpr const char* GameView::SURROUNDING_STRINGS[];
 
-GameView::GameView(int height, int width, int y0, int x0) : Widget(height, width, y0, x0) {
-    
+GameView::GameView(int height, int width, int y0, int x0)
+    : Widget(height, width, y0, x0) {
+    _game = nullptr;
 }
 
 
 void GameView::setGame(Game* game) {
     _game = game;
+    calculateLayout();
 }
 
 int GameView::maxGameHeight() const {
-    return height();
+    return height() - 2;
 }
 
 int GameView::maxGameWidth() const {
-    return width() / SQUARE_WIDTH;
+    return (width() / SQUARE_WIDTH) - 1;
 }
 
 void GameView::draw() {
-    wmove(window(), 0, 0);
-        for(Square const & sq: *_game) {
-            switch(sq.state()) {
-                case Square::Open:
-                    if(sq.isMined()) 
-                        waddstr(window(), "💥");
-                    else {
-                        auto surroundingMines = sq.surroundingMines();
-                        wattron(window(), COLOR_PAIR(surroundingMines));
-                        waddstr(window(), SURROUNDING_STRINGS[surroundingMines]);
-                        wattroff(window(), COLOR_PAIR(surroundingMines));
-                    }
+    wattron(window(), COLOR_PAIR(ColorScheme::Border));
+    wborder(window(), 0, 0, 0, 0, 0, 0, 0, 0);
+    wattroff(window(), COLOR_PAIR(ColorScheme::Border));
+    if(!_game) return;
+    if(_game->state() == Game::Running || _game->state() == Game::NotStarted) {
+        for(int row = 0; row < _maxRows; ++row) {
+            wmove(window(), field_y0 + row, field_x0);
+            for(int col = 0; col < _maxCols; ++col) {
+                Square const & sq = _game->get(row, col);
+                switch(sq.state()) {
+                    case Square::Open:
+                        if(sq.isMined()) 
+                            waddstr(window(), "💥");
+                        else {
+                            auto surroundingMines = sq.surroundingMines();
+                            wattron(window(), COLOR_PAIR(surroundingMines));
+                            waddstr(window(), SURROUNDING_STRINGS[surroundingMines]);
+                            wattroff(window(), COLOR_PAIR(surroundingMines));
+                        }
                     break;
-                case Square::Flagged:
-                    waddstr(window(), "🚩");
-                    break;
-                case Square::QuestionMark:
-                    waddstr(window(), "❔");
-                    break;
-                case Square::Closed:
-                default:
-                    waddstr(window(), "⬛");
-                    break;
+                    case Square::Closed:
+                        waddstr(window(), "⬛");
+                        break;
+                    case Square::Flagged:
+                        waddstr(window(), "🚩");
+                        break;
+                    case Square::QuestionMark:
+                        waddstr(window(), "❔");
+                        break;
+                }
             }
         }
-//         move(0,0);
-        wrefresh(window());
+    }
+    else {
+    // If game is over
+        for(int row = 0; row < _maxRows; ++row) {
+            wmove(window(), field_y0 + row, field_x0);
+            for(int col = 0; col < _maxCols; ++col) {
+                Square const & sq = _game->get(row, col);
+                switch(sq.state()) {
+                    case Square::Open:
+                    case Square::Closed:
+                        if(sq.isMined()) 
+                            waddstr(window(), "💥");
+                        else {
+                            auto surroundingMines = sq.surroundingMines();
+                            wattron(window(), COLOR_PAIR(surroundingMines));
+                            waddstr(window(), SURROUNDING_STRINGS[surroundingMines]);
+                            wattroff(window(), COLOR_PAIR(surroundingMines));
+                        }
+                        break;
+                    case Square::Flagged:
+                    case Square::QuestionMark:
+                        if(sq.isMined())
+                            waddstr(window(), "✅");
+                        else
+                            waddstr(window(), "❌");
+                        
+                        break;
+                }
+            }
+        }
+    }
+    wrefresh(window());
 }
 
-bool GameView::mouseEvent (MEVENT* event) {
-    int y = event->y - y0();
-    int x = (event->x - x0()) / SQUARE_WIDTH;
+bool GameView::mouseEvent(MEVENT* event) {
+    int y = event->y - y0() - field_y0;
+    int x = (event->x - x0() - field_x0) / SQUARE_WIDTH;
     if(y < 0 || y >= _game->height() || x < 0 || x > _game->width()) return false;
     
     if(event->bstate & (BUTTON1_CLICKED | BUTTON1_PRESSED)) {
@@ -92,4 +134,11 @@ bool GameView::mouseEvent (MEVENT* event) {
         return true;
     }
     return false;
+}
+
+void GameView::calculateLayout() {
+    _maxRows = std::min<std::size_t>(height(), maxGameHeight());
+    _maxCols = std::min<std::size_t>(width(), maxGameWidth());
+    field_y0 = 1;
+    field_x0 = 1;
 }

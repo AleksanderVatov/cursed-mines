@@ -131,3 +131,13 @@ Square const * Game::begin() const {
 Square const * Game::end() const {
     return Grid<Square>::end();
 }
+
+Square const * Game::row_begin(std::size_t row) const {
+    return Grid<Square>::row_begin(row);
+}
+
+Square const * Game::row_end(std::size_t row) const {
+    return Grid<Square>::row_end(row);
+}
+
+

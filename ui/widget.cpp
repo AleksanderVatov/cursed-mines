@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "widget.hpp"
+#include "app.hpp"
 
 std::vector<Widget*> Widget::_widgets;
 bool Widget::_loop = false;
@@ -46,7 +47,6 @@ void Widget::processEvents() {
         case ERR:
             break;
         default:
-            // Pass to widgets
             for(auto it = _widgets.rbegin(); it != _widgets.rend(); ++it) {
                     Widget * w = *it;
                     if((*it)->keyEvent(ch))
@@ -55,7 +55,7 @@ void Widget::processEvents() {
     }
 }
 
-void Widget::eventLoop() {        
+void Widget::eventLoop() {
     if(_loop) return;
     _loop = true;
     while(_loop) processEvents();

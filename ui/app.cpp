@@ -4,6 +4,7 @@
 
 #include "colorscheme.hpp"
 #include "app.hpp"
+#include <curses.h>
 
 Game     * App::game;
 GameView * App::gameView;
@@ -24,17 +25,22 @@ App::App() {
     
     mousemask(ALL_MOUSE_EVENTS, nullptr);
     refresh(); // Apparently a refresh is needed after initscr.
-        
-    gameView = new GameView(LINES - 2, COLS, 1, 0);
+    
+    int h, w;
+    getmaxyx(stdscr, h, w);
+    
+    
+    menu = new Menu(1, w, 1, 0);
+    menu->draw();
+    
+    gameView = new GameView(h - 3, w, 2, 0);
     game = new Game(gameView->maxGameHeight(), gameView->maxGameWidth());
     gameView->setGame(game);
     gameView->draw();
     
-    _statusbar = new Statusbar(1, COLS, 0, 0);
-    _statusbar->setText("Cursed Minesweeper");
     
-    menu = new Menu(1, COLS, LINES - 1, 0);
-    menu->draw();
+    _statusbar = new Statusbar(1, w, 0, 0);
+    _statusbar->setText("Cursed Minesweeper");
 }
 
 App::~App() {
@@ -52,5 +58,11 @@ void App::quit() {
     Widget::quitEventLoop();
 }
 
-
+void App::newGame() {
+    game->reset();
+    gameView->draw();
+    statusbar()->setText("Cursed Minesweeper");
+    menu->draw();
+    refresh();
+}
 

@@ -33,6 +33,8 @@ public:
     
     Square const * begin() const;
     Square const * end() const;
+    Square const * row_begin(std::size_t row) const;
+    Square const * row_end(std::size_t row) const;
     
     using Grid<Square>::get; // Get *const* reference to Square at position y, x
     using Grid<Square>::height;
