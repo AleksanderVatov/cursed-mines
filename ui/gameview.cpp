@@ -11,7 +11,6 @@ GameView::GameView(int height, int width, int y0, int x0)
     _game = nullptr;
 }
 
-
 void GameView::setGame(Game* game) {
     _game = game;
     calculateLayout();
@@ -100,17 +99,16 @@ bool GameView::mouseEvent(MEVENT* event) {
     if(event->bstate & (BUTTON1_CLICKED | BUTTON1_PRESSED)) {
         switch(_game->state()) {
             case Game::NotStarted:
-                _game->plantMines(0.15*(_game->height()*_game->width()), y, x);
+                _game->create(0.15*(_game->height()*_game->width()), y, x);
                 _game->reveal(y, x);
                 _game->start();
+                App::statusbar()->update();
                 draw();
                 break;
             case Game::Running:
                 if(_game->get(y, x).state() == Square::Open) break; // Avoid redrawing unnecessarily
-                if(_game->reveal(y, x) == Game::Lost) {
-                    App::statusbar()->setText("Game lost!");
-//                     for(Square & sq: *_game) sq.setState(Square::Open);
-                }
+                updateGameStateDescription(_game->reveal(y, x));
+                App::statusbar()->update();
                 draw();
                 break;
             case Game::Lost:
@@ -122,14 +120,14 @@ bool GameView::mouseEvent(MEVENT* event) {
     else if(event->bstate & (BUTTON3_CLICKED | BUTTON3_PRESSED)) {
 //                         mvprintw(0, 0, "Received right click at %i,%i", y, x);
 //                         refresh();
-        _game->toggleFlag(y, x);
+        
+        updateGameStateDescription(_game->toggleFlag(y, x));
+        App::statusbar()->update();
         draw();
         return true;
     }
     else if(event->bstate & BUTTON1_DOUBLE_CLICKED) {
-        if(_game->revealUnflaggedNeighbors(y, x) == Game::Lost) {
-            App::statusbar()->setText("Game lost!");
-        }
+        updateGameStateDescription(_game->revealUnflaggedNeighbors(y, x));
         draw();
         return true;
     }
@@ -142,3 +140,17 @@ void GameView::calculateLayout() {
     field_y0 = 1;
     field_x0 = 1;
 }
+
+void GameView::updateGameStateDescription(Game::State state) {
+    switch(state) {
+        case Game::Won:
+            App::statusbar()->setText("Game won!");
+            break;
+        case Game::Lost:
+            App::statusbar()->setText("Game lost!");
+            break;
+        default:
+            break;
+    }
+}
+

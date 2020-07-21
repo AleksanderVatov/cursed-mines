@@ -59,7 +59,7 @@ void App::quit() {
 }
 
 void App::newGame() {
-    game->reset();
+    game->clear();
     gameView->draw();
     statusbar()->setText("Cursed Minesweeper");
     menu->draw();

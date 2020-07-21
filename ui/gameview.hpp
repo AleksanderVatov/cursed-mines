@@ -24,6 +24,7 @@ public:
     
 protected:
     void calculateLayout();
+    void updateGameStateDescription(Game::State state);
     
 private:
     Game* _game;

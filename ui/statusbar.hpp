@@ -13,13 +13,14 @@ public:
     void setText(std::string const& newText);
     
     virtual void draw() override;
+    void update();
 protected:
-    
     void calculateLayout();
     
 private:
     std::string _text;
-    unsigned short _availableSpace;
+    unsigned short _availableSpace, _textAreaStart;
+    unsigned short _mines = 0, _flags = 0;
 };
 
 #endif //STATUSBAR_HPP
