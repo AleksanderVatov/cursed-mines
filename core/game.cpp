@@ -5,6 +5,7 @@
 #include <ctime>
 #include <queue>
 #include <set>
+#include <stdexcept>
 
 Game::Game(std::size_t height, std::size_t width): Grid<Square>(height, width) {
     _state = NotStarted;
@@ -18,7 +19,7 @@ unsigned Game::numberOfFlags() const {
     return _flags;
 }
 
-void Game::create(unsigned int numberOfMines, std::size_t revealedY, std::size_t revealedX) {
+void Game::create(unsigned numberOfMines, std::size_t revealedY, std::size_t revealedX) {
     if(_mines != 0) clear();
     
     std::set<std::size_t> locationsToAvoid;
@@ -29,6 +30,7 @@ void Game::create(unsigned int numberOfMines, std::size_t revealedY, std::size_t
         locationsToAvoid.insert(it.flatIndex());
     
     plantMines(numberOfMines, locationsToAvoid);
+    reveal(revealedY, revealedX);
 }
 
 
@@ -116,6 +118,9 @@ void Game::start() {
 void Game::clear() {
     std::fill(Grid<Square>::begin(), Grid<Square>::end(), Square());
     _state = NotStarted;
+    _openSquares = 0;
+    _mines = 0;
+    _flags = 0;
 }
 
 Square const * Game::begin() const {
@@ -142,6 +147,7 @@ void Game::plantMines(std::set<std::size_t> const & locations) {
             for(Square& n: neighbors(ind)) n.incrementSurroundingMines();
         }
     }
+    
     _mines += locations.size();
 };
 

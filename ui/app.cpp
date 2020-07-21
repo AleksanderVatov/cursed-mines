@@ -40,6 +40,7 @@ App::App() {
     
     
     _statusbar = new Statusbar(1, w, 0, 0);
+    _statusbar->setDefaults(0.15*game->height()*game->width(), 0);
     _statusbar->setText("Cursed Minesweeper");
 }
 
@@ -62,6 +63,7 @@ void App::newGame() {
     game->clear();
     gameView->draw();
     statusbar()->setText("Cursed Minesweeper");
+    statusbar()->update();
     menu->draw();
     refresh();
 }

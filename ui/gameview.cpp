@@ -100,7 +100,6 @@ bool GameView::mouseEvent(MEVENT* event) {
         switch(_game->state()) {
             case Game::NotStarted:
                 _game->create(0.15*(_game->height()*_game->width()), y, x);
-                _game->reveal(y, x);
                 _game->start();
                 App::statusbar()->update();
                 draw();
@@ -122,7 +121,6 @@ bool GameView::mouseEvent(MEVENT* event) {
 //                         refresh();
         
         updateGameStateDescription(_game->toggleFlag(y, x));
-        App::statusbar()->update();
         draw();
         return true;
     }
@@ -152,5 +150,6 @@ void GameView::updateGameStateDescription(Game::State state) {
         default:
             break;
     }
+    App::statusbar()->update();
 }
 

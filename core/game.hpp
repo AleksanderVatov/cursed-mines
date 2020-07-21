@@ -21,7 +21,7 @@ public:
     unsigned numberOfMines() const;
     unsigned numberOfFlags() const;
     
-    void create(unsigned int numberOfMines, std::size_t revealedY, std::size_t revealedX);
+    void create(unsigned numberOfMines, std::size_t revealedY, std::size_t revealedX);
     State reveal(std::size_t y, std::size_t x);
     State revealUnflaggedNeighbors(std::size_t y, std::size_t x);
     State toggleFlag(std::size_t y, std::size_t x);
@@ -47,7 +47,7 @@ protected:
     
 private:
     State _state;
-    unsigned _openSquares, _mines = 0, _flags = 0;
+    unsigned _openSquares = 0, _mines = 0, _flags = 0;
     
 };
 #endif // MINEFIELD_HPP
