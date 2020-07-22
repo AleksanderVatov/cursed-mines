@@ -25,6 +25,7 @@ int GameView::maxGameWidth() const {
 }
 
 void GameView::draw() {
+    wclear(window());
     wattron(window(), COLOR_PAIR(ColorScheme::Border));
     wborder(window(), 0, 0, 0, 0, 0, 0, 0, 0);
     wattroff(window(), COLOR_PAIR(ColorScheme::Border));
@@ -36,7 +37,7 @@ void GameView::draw() {
                 Square const & sq = _game->get(row, col);
                 switch(sq.state()) {
                     case Square::Open:
-                        if(sq.isMined()) 
+                        if(sq.isMined())
                             waddstr(window(), "💥");
                         else {
                             auto surroundingMines = sq.surroundingMines();
@@ -46,7 +47,11 @@ void GameView::draw() {
                         }
                     break;
                     case Square::Closed:
+                    #ifndef __APPLE__
                         waddstr(window(), "⬛");
+                    #else
+                        waddstr(window(), "🥚");
+                    #endif
                         break;
                     case Square::Flagged:
                         waddstr(window(), "🚩");
@@ -67,7 +72,7 @@ void GameView::draw() {
                 switch(sq.state()) {
                     case Square::Open:
                     case Square::Closed:
-                        if(sq.isMined()) 
+                        if(sq.isMined())
                             waddstr(window(), "💥");
                         else {
                             auto surroundingMines = sq.surroundingMines();
@@ -82,7 +87,7 @@ void GameView::draw() {
                             waddstr(window(), "✅");
                         else
                             waddstr(window(), "❌");
-                        
+
                         break;
                 }
             }
@@ -95,7 +100,7 @@ bool GameView::mouseEvent(MEVENT* event) {
     int y = event->y - y0() - field_y0;
     int x = (event->x - x0() - field_x0) / SQUARE_WIDTH;
     if(y < 0 || y >= _game->height() || x < 0 || x > _game->width()) return false;
-    
+
     if(event->bstate & (BUTTON1_CLICKED | BUTTON1_PRESSED)) {
         switch(_game->state()) {
             case Game::NotStarted:
@@ -119,7 +124,7 @@ bool GameView::mouseEvent(MEVENT* event) {
     else if(event->bstate & (BUTTON3_CLICKED | BUTTON3_PRESSED)) {
 //                         mvprintw(0, 0, "Received right click at %i,%i", y, x);
 //                         refresh();
-        
+
         updateGameStateDescription(_game->toggleFlag(y, x));
         draw();
         return true;
@@ -152,4 +157,3 @@ void GameView::updateGameStateDescription(Game::State state) {
     }
     App::statusbar()->update();
 }
-

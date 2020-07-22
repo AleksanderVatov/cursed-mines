@@ -8,6 +8,11 @@ add_subdirectory(core)
 add_subdirectory(ui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+if(APPLE)
+  # This is where Homebrew installs ncurses
+  set(CMAKE_PREFIX_PATH /usr/local/opt/ncurses)
+endif()
+
 set(CURSES_NEED_WIDE TRUE) # Unicode support required
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
